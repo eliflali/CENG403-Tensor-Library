@@ -267,7 +267,7 @@ class gergen:
         # argument 3 is func to be executed
         # lambda: f(x,y) -> x / y ; x is self
         operation = lambda x, y: x / y
-        divided_gergen = gergen(self._element_wise_operation(other.veri(), operation, zero_check=True)) 
+        divided_gergen = gergen(self._element_wise_operation(other, operation, zero_check=True)) 
         return divided_gergen
 
 
@@ -604,7 +604,7 @@ class gergen:
             result.append(row)
         result = gergen(result)._traverse_elmts([], result)
         result = self.format_matrix(result, [other_boyut[0], self_boyut[0]])
-        print(result)
+        return result
                 
                 
         
@@ -727,7 +727,7 @@ class gergen:
             
         return result
     
-def example_1():
+def tester():
     #Example 1
     boyut = (3,3, 3)
     g1 = test.rastgele_gercek(boyut)
@@ -737,30 +737,32 @@ def example_1():
     a = np.random.rand(3,3, 3)
     a = np.array([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], dtype=np.int16)
     a = np.array([[1, 2], [4, 5]], dtype=np.int16)
+    print(np.multiply(a,a))
     #a = np.array([1, 2,4, 5], dtype=np.int16)
-    print(a.shape)
-    print(a.view())
+    #print(a.shape)
+    #print(a.view())
     #print(a.sum(axis=0))
-    print(np.dot(a, a))
+    #print(np.dot(a, a))
     #print("g1", g1)
     g2 = test.rastgele_gercek(boyut)
 
     start = time.time()
     
-    print(g1.__str__())
+    #print(g1.__str__())
     #print(g1.topla(0))
     #g3 = g1.duzlestir()
     #print(g3.__str__())
     #print(g3.boyut())
     #g3 = gergen(g3.boyutlandir((3,4)))
     #print(g3)
-    print(g1.ic_carpim(g1))
+    #print(g1.ic_carpim(g1))
     #TODO
     #Apply given equation
     end = time.time()
 
     start_np = time.time()
     #Apply the same equation for NumPy equivalent
+    
     end_np = time.time()
 
     #TODO:
@@ -769,6 +771,119 @@ def example_1():
     print("Time taken for gergen:", end-start)
     print("Time taken for numpy:", end_np-start_np)
     
+def example_1():
+    #Example 1
+    boyut = (64,64)
+    A = test.rastgele_gercek(boyut)
+    B = test.rastgele_gercek(boyut)
+
+    start = time.time()
+    #TODO
+    #Apply given equation
+    print(A.ic_carpim(B))
+    end = time.time()
+
+    np1 = np.random.rand(64,64)
+    np2 = np.random.rand(64,64)
+    start_np = time.time()
+    #Apply the same equation for NumPy equivalent
+    print(np.dot(np1, np2))
+    end_np = time.time()
+
+    #TODO:
+    #Compare if the two results are the same
+    #Report the time difference
+    print("Time taken for gergen:", end-start)
+    print("Time taken for numpy:", end_np-start_np)
+    
+def example_2():
+    #Example 2
+    #TODO:
+    boyut = (4,16,16,16)
+    A = test.rastgele_gercek(boyut)
+    B = test.rastgele_gercek(boyut)
+    C = test.rastgele_gercek(boyut)
+    
+    #gergen time
+    start = time.time()
+    
+    AmulB = A.__mul__(B)
+    CmulA = C.__mul__(A)
+    BmulC = B.__mul__(C)
+    
+    ABsumCA = AmulB.__add__(CmulA)
+    matrix_res = ABsumCA.__add__(BmulC)
+    
+    gergen_result = matrix_res.ortalama()
+    
+    end = time.time()
+    
+    a = np.random.rand(4,16,16,16)
+    b = np.random.rand(4,16,16,16)
+    c = np.random.rand(4,16,16,16)
+    #numpy time
+    start_np = time.time()
+    #Apply the same equation for NumPy equivalent
+    axb = np.multiply(a, b)
+    cxa = np.multiply(c,a)
+    bxc = np.multiply(b,c)
+    
+    axbcxa = np.add(axb, cxa)
+    matrix_result = np.add(axbcxa, bxc)
+    
+    numpy_result = matrix_result.mean()
+    
+    end_np = time.time()
+    
+    print("Time taken for gergen:", end-start)
+    print("Time taken for numpy:", end_np-start_np)
+    
+    return gergen_result
+
+def example_3():
+    #Example 3
+    #TODO:
+    boyut = (3,64,64)
+    A = test.rastgele_gercek(boyut)
+    B = test.rastgele_gercek(boyut)
+
+    start = time.time()
+    #TODO
+    #Apply given equation
+    sinA = A.sin()
+    cosB = B.cos()
+    sinAcosB = sinA.__add__(cosB)
+    
+    lnned = sinAcosB.ln()
+    squared = lnned.us(2)
+    
+    gergen_result = squared.__truediv__(8)
+    
+    end = time.time()
+
+    a = np.random.rand(3,64,64)
+    b = np.random.rand(3,64,64)
+    start_np = time.time()
+    #Apply the same equation for NumPy equivalent
+    sina = np.sin(a)
+    cosb = np.cos(b)
+    sinacosb = np.add(sina,cosb)
+    
+    lnnednp = np.log(sinacosb)
+    
+    squarednp = np.square(lnnednp)
+    
+    np_result = np.divide(squarednp, 8)
+    
+    
+    end_np = time.time()
+    #TODO:
+    #Compare if the two results are the same
+    #Report the time difference
+    print("Time taken for gergen:", end-start)
+    print("Time taken for numpy:", end_np-start_np)
+    
+    return gergen_result
     
 if __name__ == '__main__':
-    example_1()
+    example_3()
