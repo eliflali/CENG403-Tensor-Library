@@ -5,64 +5,63 @@ import numpy as np
 import time
 
 
-class test:
-    @staticmethod
-    def cekirdek(sayi: int):
-        #Sets the seed for random number generation
-        return random.seed(sayi)
 
-    @staticmethod
-    def generate_gergen(boyut, generator, level=0):
-        # Generate the tensor data recursively
-        if level == len(boyut) - 1:
-            #print(gergen([generator() for _ in range(boyut[level])]))
-            return gergen([generator() for _ in range(boyut[level])])
-        else:
-            return gergen([test.generate_gergen(boyut, generator, level + 1).veri() for _ in range(boyut[level])])
+
+def cekirdek(sayi: int):
+    #Sets the seed for random number generation
+    return random.seed(sayi)
+
+
+def generate_gergen(boyut, generator, level=0):
+    # Generate the tensor data recursively
+    if level == len(boyut) - 1:
+        return gergen([generator() for _ in range(boyut[level])]) 
+    else:
+        return gergen([generate_gergen(boyut, generator, level + 1).veri() for _ in range(boyut[level])])
        
-    @staticmethod 
-    def rastgele_dogal(boyut, aralik=(0,100), dagilim='uniform'):
-        """
-        Generates data of specified dimensions with random integer values and returns a gergen object.
 
-        Parameters:
-        boyut (tuple): Shape of the desired data.
-        aralik (tuple, optional): (min, max) specifying the range of random values. Defaults to (0,100), which implies a default range.
-        dagilim (string, optional): Distribution of random values ('uniform'). Defaults to 'uniform'.
+def rastgele_dogal(boyut, aralik=(0,100), dagilim='uniform'):
+    """
+    Generates data of specified dimensions with random integer values and returns a gergen object.
 
-        Returns:
-        gergen: A new gergen object with random integer values.
-        """
-        if dagilim == 'uniform': #only uniform
-            generator = lambda: random.randint(aralik[0], aralik[1])
-        else:
-            raise ValueError("Unsupported distribution type. Please use 'uniform'.")
-        
-        return test.generate_gergen(boyut, generator)
+    Parameters:
+    boyut (tuple): Shape of the desired data.
+    aralik (tuple, optional): (min, max) specifying the range of random values. Defaults to (0,100), which implies a default range.
+    dagilim (string, optional): Distribution of random values ('uniform'). Defaults to 'uniform'.
 
-    @staticmethod
-    def rastgele_gercek(boyut, aralik=(0.0, 1.0), dagilim='uniform'):
-        """
-        Generates a gergen of specified dimensions with random floating-point values.
+    Returns:
+    gergen: A new gergen object with random integer values.
+    """
+    if dagilim == 'uniform': #only uniform
+        generator = lambda: random.randint(aralik[0], aralik[1])
+    else:
+        raise ValueError("Unsupported distribution type. Please use 'uniform'.")
+    
+    return generate_gergen(boyut, generator)
 
-        Parameters:
-        boyut (tuple): Shape of the desired gergen.
-        aralik (tuple, optional): (min, max) specifying the range of random values. Defaults to (0.0, 1.0) for uniform distribution.
-        dagilim (string, optional): Distribution of random value ('uniform'). Defaults to 'uniform'.
+@staticmethod
+def rastgele_gercek(boyut, aralik=(0.0, 1.0), dagilim='uniform'):
+    """
+    Generates a gergen of specified dimensions with random floating-point values.
 
-        Returns:
-        gergen: A new gergen object with random floating-point values.
-        """
+    Parameters:
+    boyut (tuple): Shape of the desired gergen.
+    aralik (tuple, optional): (min, max) specifying the range of random values. Defaults to (0.0, 1.0) for uniform distribution.
+    dagilim (string, optional): Distribution of random value ('uniform'). Defaults to 'uniform'.
 
-        if dagilim == 'uniform':
-            generator = lambda: random.uniform(aralik[0], aralik[1])
+    Returns:
+    gergen: A new gergen object with random floating-point values.
+    """
 
-        else:
-            raise ValueError("Unsupported distribution type. Please use 'uniform' or 'gaussian'.")
-        
-        gergen_generated = test.generate_gergen(boyut, generator)
-        #("a", gergen_generated)
-        return gergen_generated
+    if dagilim == 'uniform':
+        generator = lambda: random.uniform(aralik[0], aralik[1])
+
+    else:
+        raise ValueError("Unsupported distribution type. Please use 'uniform'.")
+    
+    gergen_generated = generate_gergen(boyut, generator)
+    #("a", gergen_generated)
+    return gergen_generated
 
 
 
@@ -105,7 +104,10 @@ class gergen:
             # if it is a list
             # trace all dimensions recursively
             if(len(veri)>0):
-                return (len(veri),) + self._compute_boyut(veri[0])
+                if isinstance(veri[0], (int,float)):
+                    return (len(veri),)
+                else:   
+                    return (len(veri),) + self._compute_boyut(veri[0])
             else:
                 return (0,)
         else:
@@ -157,7 +159,8 @@ class gergen:
         [4, 5, 6]]
         """
         if isinstance(self.veri(), (int, float)):  # if scalar
-            return f"gergen : {self.veri()}"
+            boyut_str = '0 boyutlu gergen:\n'
+            return boyut_str + f"{self.veri()}"
 
         # boyut string
         dim = self.boyut()
@@ -395,7 +398,7 @@ class gergen:
             flat_combinations.append(a) # consist of all combinations of dimensions
             
         
-        transposed_gergen = test.rastgele_gercek(new_dim)
+        transposed_gergen = rastgele_gercek(new_dim)
         
         transposed_veri = transposed_gergen.listeye()
         
@@ -729,28 +732,39 @@ class gergen:
     
 def tester():
     #Example 1
-    boyut = (3,3, 3)
-    g1 = test.rastgele_gercek(boyut)
-    g1 = gergen([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]])
+    boyut = (24,)
+    g1 = rastgele_gercek(boyut)
+    #g1 = gergen([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]])
     g1 = gergen([[1, 2], [4, 5]])
     #g1 = gergen([1, 2 , 4, 5])
+    #g1 = gergen(5)
+    #g1 = gergen([1,2,3])
     a = np.random.rand(3,3, 3)
     a = np.array([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], dtype=np.int16)
     a = np.array([[1, 2], [4, 5]], dtype=np.int16)
+    b = np.array([[1, 2], [4, 5]], dtype=np.int16)
     print(np.multiply(a,a))
     #a = np.array([1, 2,4, 5], dtype=np.int16)
     #print(a.shape)
     #print(a.view())
     #print(a.sum(axis=0))
     #print(np.dot(a, a))
-    #print("g1", g1)
-    g2 = test.rastgele_gercek(boyut)
-
+    print(g1)
+    g2 = rastgele_gercek(boyut)
+    g2 = gergen([[1, 2], [4, 5]])
     start = time.time()
+
+    AT = g1.devrik()
+    print("AT ", AT)
+    gergen_result = AT.ic_carpim(g2)
     
-    #print(g1.__str__())
-    #print(g1.topla(0))
+    
+    print("gre ", gergen_result)
     #g3 = g1.duzlestir()
+    at = a.transpose()
+    print("at ", at)
+    np_res = np.dot(at,b)
+    print("np_res ", np_res)
     #print(g3.__str__())
     #print(g3.boyut())
     #g3 = gergen(g3.boyutlandir((3,4)))
@@ -758,6 +772,7 @@ def tester():
     #print(g1.ic_carpim(g1))
     #TODO
     #Apply given equation
+    
     end = time.time()
 
     start_np = time.time()
@@ -774,20 +789,22 @@ def tester():
 def example_1():
     #Example 1
     boyut = (64,64)
-    A = test.rastgele_gercek(boyut)
-    B = test.rastgele_gercek(boyut)
+    A = rastgele_gercek(boyut)
+    B = rastgele_gercek(boyut)
 
     start = time.time()
     #TODO
     #Apply given equation
-    print(A.ic_carpim(B))
+    AT = A.devrik()
+    gergen_result = AT.ic_carpim(B)
     end = time.time()
 
-    np1 = np.random.rand(64,64)
-    np2 = np.random.rand(64,64)
+    a = np.random.rand(64,64)
+    b = np.random.rand(64,64)
     start_np = time.time()
     #Apply the same equation for NumPy equivalent
-    print(np.dot(np1, np2))
+    aT = a.transpose()
+    np_result = np.dot(aT,b)
     end_np = time.time()
 
     #TODO:
@@ -795,14 +812,22 @@ def example_1():
     #Report the time difference
     print("Time taken for gergen:", end-start)
     print("Time taken for numpy:", end_np-start_np)
+
+    """
+    Time taken for gergen: 0.015883922576904297
+    Time taken for numpy: 3.886222839355469e-05
+    
+    Result for numpy is significantly less than gergen class.
+    Probably numpy is more efficient in calculations.
+    """
     
 def example_2():
     #Example 2
     #TODO:
     boyut = (4,16,16,16)
-    A = test.rastgele_gercek(boyut)
-    B = test.rastgele_gercek(boyut)
-    C = test.rastgele_gercek(boyut)
+    A = rastgele_gercek(boyut)
+    B = rastgele_gercek(boyut)
+    C = rastgele_gercek(boyut)
     
     #gergen time
     start = time.time()
@@ -837,6 +862,16 @@ def example_2():
     
     print("Time taken for gergen:", end-start)
     print("Time taken for numpy:", end_np-start_np)
+
+    
+    """
+    Time taken for gergen: 0.027724742889404297
+    Time taken for numpy: 0.0003571510314941406
+    
+    Result for numpy is significantly less than gergen class.
+    Probably numpy is more efficient in calculations.
+    
+    """
     
     return gergen_result
 
@@ -844,8 +879,8 @@ def example_3():
     #Example 3
     #TODO:
     boyut = (3,64,64)
-    A = test.rastgele_gercek(boyut)
-    B = test.rastgele_gercek(boyut)
+    A = rastgele_gercek(boyut)
+    B = rastgele_gercek(boyut)
 
     start = time.time()
     #TODO
@@ -883,7 +918,16 @@ def example_3():
     print("Time taken for gergen:", end-start)
     print("Time taken for numpy:", end_np-start_np)
     
+    """
+    Time taken for gergen: 0.016682863235473633
+    Time taken for numpy: 0.00025081634521484375
+    
+    Again, numpy is very successful in computing. 
+    This is caused of efficiency issues in my implementation.
+    """
     return gergen_result
     
 if __name__ == '__main__':
+    example_1()
+    example_2()
     example_3()
