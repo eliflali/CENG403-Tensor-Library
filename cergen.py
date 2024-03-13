@@ -92,8 +92,8 @@ class gergen:
     # empty_tensor = gergen()
         self.__veri = veri
         #self.__boyut = self._compute_boyut(self.__veri)
-        #self.D = self._transpose(self.__veri)
         
+    
     def veri(self):
         return self.__veri
 
@@ -338,19 +338,6 @@ class gergen:
            dimension = self._compute_boyut(self.__veri) 
         return dimension
 
-    # private helper method for devrik
-    def _transpose(self, veri = None):
-        if veri == None:
-            veri = self.__veri
-            
-        if not isinstance(veri[0], list):
-            return veri
-        
-        else:
-            # trace dimensions
-            transposed_inner = [self._transpose(list(subtensor)) for subtensor in zip(*veri)]
-            return transposed_inner
-    
     def combination(self, comb_list): #comb_list consists of 2 lists
         result = []
         for a in comb_list[0]:
@@ -407,7 +394,6 @@ class gergen:
             for a in i:
                 trans_coord.append(a)
             trans_coord.reverse()
-            #assign_gergen_element(self, data, index, value):
             value = self.__getitem__(i)
             self.assign_element(transposed_veri, trans_coord, value.veri())
 
@@ -417,7 +403,6 @@ class gergen:
     def devrik(self): # must return gergen object
         # Returns the transpose of gergen
         # write helper to calculate transpose.
-        #devrik_gergen = gergen(self._transpose(self.__veri)) # not SURE!
         dim = self.boyut()
         dim_list = []
         for i in dim:
@@ -426,6 +411,7 @@ class gergen:
         #devrik_gergen = self.transpose(self.veri(), dim_list)
 
         devrik_gergen = self.devir(dim)
+        self.D = devrik_gergen
         return devrik_gergen
 
     def sin(self):
@@ -730,61 +716,7 @@ class gergen:
             
         return result
     
-def tester():
-    #Example 1
-    boyut = (24,)
-    g1 = rastgele_gercek(boyut)
-    #g1 = gergen([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]])
-    g1 = gergen([[1, 2], [4, 5]])
-    #g1 = gergen([1, 2 , 4, 5])
-    #g1 = gergen(5)
-    #g1 = gergen([1,2,3])
-    a = np.random.rand(3,3, 3)
-    a = np.array([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], dtype=np.int16)
-    a = np.array([[1, 2], [4, 5]], dtype=np.int16)
-    b = np.array([[1, 2], [4, 5]], dtype=np.int16)
-    print(np.multiply(a,a))
-    #a = np.array([1, 2,4, 5], dtype=np.int16)
-    #print(a.shape)
-    #print(a.view())
-    #print(a.sum(axis=0))
-    #print(np.dot(a, a))
-    print(g1)
-    g2 = rastgele_gercek(boyut)
-    g2 = gergen([[1, 2], [4, 5]])
-    start = time.time()
 
-    AT = g1.devrik()
-    print("AT ", AT)
-    gergen_result = AT.ic_carpim(g2)
-    
-    
-    print("gre ", gergen_result)
-    #g3 = g1.duzlestir()
-    at = a.transpose()
-    print("at ", at)
-    np_res = np.dot(at,b)
-    print("np_res ", np_res)
-    #print(g3.__str__())
-    #print(g3.boyut())
-    #g3 = gergen(g3.boyutlandir((3,4)))
-    #print(g3)
-    #print(g1.ic_carpim(g1))
-    #TODO
-    #Apply given equation
-    
-    end = time.time()
-
-    start_np = time.time()
-    #Apply the same equation for NumPy equivalent
-    
-    end_np = time.time()
-
-    #TODO:
-    #Compare if the two results are the same
-    #Report the time difference
-    print("Time taken for gergen:", end-start)
-    print("Time taken for numpy:", end_np-start_np)
     
 def example_1():
     #Example 1
@@ -928,6 +860,10 @@ def example_3():
     return gergen_result
     
 if __name__ == '__main__':
+    """
     example_1()
     example_2()
     example_3()
+    """
+    tester()
+    
